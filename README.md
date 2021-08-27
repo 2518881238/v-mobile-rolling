@@ -15,11 +15,17 @@ transform: translateX();
 ```
 &emsp;&emsp;
 另外，在滚动区域需要三个事件触发函数，分别是touchstart，touchmove和touchend。还需要几个计算滚动长度的参数。
+
 1.滑动开始记录滑动位置startX，滑动过程中叠加滑动距离moveX并且赋值给transform: translateX()。下一次滑动时基于上一次滑动，故需要allMove累计滑动距离。
+
 2.弹性滑动则是滑动时允许超出一段距离，滑动结束后则减去超出这段距离。即maxUpBounce - maxUp 或者 maxDownBounce - maxDown即可。
+
 3.快速滑动和慢速滑动则是通过计算滑动结束时的速度来计算，速度高，则在实际滑动距离的基础上加上多余滑动距离值。当然，这个多余滑动距离值和速度呈线性相关。
+
 4.使用MutationObserver监听滑动内部dom高度的变化，可以监听到异步请求数据导致的dom更新。
+
 5.按照单位距离滚动，比如列表项里，按照列表高度或者宽度单位滚动，可以实现列表项的选择。
+
 
 
 ```$xslt
