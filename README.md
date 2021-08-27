@@ -286,7 +286,8 @@ moveDistance: 0,//记录移动距离用于计算滑动结束时的速度
         this.allMove = this.allMove + m;
 
         //计算滑动速度
-        let v = Math.abs((event.changedTouches[0][this.clientDir] - this.moveDistance) / (new Date().getTime() - this.moveTime))
+        let v = Math.abs((event.changedTouches[0][this.clientDir] - this.moveDistance)
+        / (new Date().getTime() - this.moveTime))
         console.log(v)
 
         //经测试，滑动速度大于0.6计算为快滑动
