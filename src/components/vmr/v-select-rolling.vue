@@ -8,9 +8,13 @@
       <div class="date">
 
         <!--选中项添加样式-->
+        <span class="date-item"></span>
+        <span class="date-item"></span>
         <span class="date-item" :class="selectIndex === index ? 'date-select':''" v-for="(item,index) in dateList":key="index">
             {{item.name}}
         </span>
+        <span class="date-item"></span>
+        <span class="date-item"></span>
 
       </div>
 
@@ -49,7 +53,7 @@
         //设置延迟是应为滚动结束有800ms动画，等待动画结束再渲染
         setTimeout(() => {
 
-          this.selectIndex = Math.abs(touchDistance / this.rollUnit) + 2;
+          this.selectIndex = Math.abs(touchDistance / this.rollUnit);
           this.$emit('selectItem', this.dateList[this.selectIndex])
 
         }, 800)

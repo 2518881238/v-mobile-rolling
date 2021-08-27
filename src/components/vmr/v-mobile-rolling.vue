@@ -4,9 +4,9 @@
   <div class="v-m-box" ref="VMBox" :style="{height: horizontal ? heightDom : heightHorizontal+'px'}">
 
     <!--纵向滚动需要定宽，横向滚动需要定高-->
-    <div class="v-m-roll" :class="horizontal ? '' : 'width100'" ref="VMRoll" @touchstart.stop.prevent="handleTouchStart"
-         @touchmove.stop.prevent="handleTouchMove"
-         @touchend.stop.prevent="handleTouchStop">
+    <div class="v-m-roll" :class="horizontal ? '' : 'width100'" ref="VMRoll" @touchstart="handleTouchStart"
+         @touchmove="handleTouchMove"
+         @touchend="handleTouchStop">
 
       <slot></slot>
 
@@ -153,6 +153,10 @@
       //开始滚动触发
       handleTouchStart(event) {
 
+        if (this.horizontal === false){
+          event.preventDefault();
+        }
+
         if (!this.isRolling) {
           return;
         }
@@ -173,6 +177,9 @@
 
       //滚动中触发
       handleTouchMove(event) {
+        if (this.horizontal === false){
+          event.preventDefault();
+        }
 
         if (!this.isRolling) {
           return;
@@ -186,8 +193,15 @@
 
         let disMove = this.allMove + this.moveX;
 
-        //如果当前鼠标累计移动了的距离大于最大向右可移动的距离，则不能再向右移动,左边反之
-        disMove = disMove > this.maxDown ? this.maxDown : this.maxUp;
+        //如果当前鼠标累计移动了的距离大于最大向右可移动的距离，则不能再向右移动
+        if (disMove > this.maxDown) {
+          disMove = this.maxDown;
+        }
+
+        // 当累计移动了的距离小于设定的最大向左距离,则不能向左滑动
+        else if (disMove < this.maxUp) {
+          disMove = this.maxUp;
+        }
 
         //利用动画实现滑动效果
         this.$refs['VMRoll'].style.transition = "transform 100ms cubic-bezier(.165, .84, .44, 1) 0s";
@@ -206,6 +220,9 @@
 
       //滚动停止时触发
       handleTouchStop(event) {
+        if (this.horizontal === false){
+          event.preventDefault();
+        }
 
         if (!this.isRolling) {
           return;
@@ -219,19 +236,28 @@
 
         //计算滑动速度
         let v = Math.abs((event.changedTouches[0][this.clientDir] - this.moveDistance) / (new Date().getTime() - this.moveTime))
+        console.log(v)
 
         //经测试，滑动速度大于0.6计算为快滑动
         if (m > 0) { //往右边滑动时，加上多余滑动的距离,距离随着速度梯度变化
-          this.allMove = this.allMove + v > 0.6 ? Math.abs(this.distanceMore * v) : v > 0.2 ? 100 : 0;
+          this.allMove = this.allMove + Math.abs(this.distanceMore * v);
         } else if(m < 0) { //往左边滑动时，减去多余滑动的距离,距离随着速度梯度变化
-          this.allMove = this.allMove - v > 0.6 ? Math.abs(this.distanceMore * v) : v > 0.2 ? 100 : 0;
+          this.allMove = this.allMove - Math.abs(this.distanceMore * v);
         }
 
         //是否按照规定的单位长度的倍数滑动，不足补齐，多了减去
         this.allMove = this.getUnitValue(this.allMove, m > 0 ? 1 : -1);
 
         // 让两次滑动的距离不超过设置的边界值
-        this.allMove = this.allMove >= this.maxUpBounce ? this.maxUpBounce : this.maxDownBounce;
+        if (this.allMove >= this.maxUpBounce) {
+
+          this.allMove = this.maxUpBounce;
+
+        } else if (this.allMove < this.maxDownBounce) {
+
+          this.allMove = this.maxDownBounce;
+
+        }
 
         //利用动画实现滑动效果
         this.$refs['VMRoll'].style.transition = "transform 800ms cubic-bezier(.165, .84, .44, 1) 0s";
