@@ -106,14 +106,13 @@
         //设置observer的配置选项
         let config = { attributes: true, childList: true, subtree: true };
 
-        //创建一个observer示例与回调函数相关联
+        //创建一个observer示例与回调函数相关联，监测dom变化，比如通过异步请求滚动区域内的数据
         this.observer = new MutationObserver(()=>{
           this.heightDom = this.$refs['VMRoll'].offsetHeight+'px';
         });
 
         //使用配置文件对目标节点进行观测
         this.observer.observe(this.$refs['VMRoll'], config);
-
 
         //检测内容是否大于父元素，不大于则不滚动
         this.isRolling = (this.$refs['VMRoll'][this.offsetDir] - this.$refs['VMBox'][this.offsetDir]) > 0
@@ -187,15 +186,8 @@
 
         let disMove = this.allMove + this.moveX;
 
-        //如果当前鼠标累计移动了的距离大于最大向右可移动的距离，则不能再向右移动
-        if (disMove > this.maxDown) {
-          disMove = this.maxDown;
-        }
-
-        // 当累计移动了的距离小于设定的最大向左距离,则不能向左滑动
-        else if (disMove < this.maxUp) {
-          disMove = this.maxUp;
-        }
+        //如果当前鼠标累计移动了的距离大于最大向右可移动的距离，则不能再向右移动,左边反之
+        disMove = disMove > this.maxDown ? this.maxDown : this.maxUp;
 
         //利用动画实现滑动效果
         this.$refs['VMRoll'].style.transition = "transform 100ms cubic-bezier(.165, .84, .44, 1) 0s";
@@ -203,11 +195,8 @@
 
         //计算时间戳，大于300属于慢速滑动，小于300则属于快速滑动
         if (new Date().getTime() - this.moveTime > 300) {
-
           this.moveTime = new Date().getTime();
-
           this.moveDistance = event.touches[0][this.clientDir];
-
         }
 
         //滑动过程中触发回调
@@ -231,44 +220,18 @@
         //计算滑动速度
         let v = Math.abs((event.changedTouches[0][this.clientDir] - this.moveDistance) / (new Date().getTime() - this.moveTime))
 
-
-        //经测试，滑动速度大于0.8计算为快滑动
-        if (v > 0.8) {
-
-          if (m > 0) { //往右边滑动时，加上多余滑动的距离
-
-            this.allMove = this.allMove + Math.abs(this.distanceMore);
-
-          } else if(m < 0) { //往左边滑动时，减去多余滑动的距离
-
-            this.allMove = this.allMove - Math.abs(this.distanceMore);
-
-          }
-
+        //经测试，滑动速度大于0.6计算为快滑动
+        if (m > 0) { //往右边滑动时，加上多余滑动的距离,距离随着速度梯度变化
+          this.allMove = this.allMove + v > 0.6 ? Math.abs(this.distanceMore * v) : v > 0.2 ? 100 : 0;
+        } else if(m < 0) { //往左边滑动时，减去多余滑动的距离,距离随着速度梯度变化
+          this.allMove = this.allMove - v > 0.6 ? Math.abs(this.distanceMore * v) : v > 0.2 ? 100 : 0;
         }
 
         //是否按照规定的单位长度的倍数滑动，不足补齐，多了减去
-        if (m > 0) {
-
-          this.allMove = this.getUnitValue(this.allMove, 1);
-
-        } else if(m < 0) {
-
-          this.allMove = this.getUnitValue(this.allMove, -1);
-
-        }
-
+        this.allMove = this.getUnitValue(this.allMove, m > 0 ? 1 : -1);
 
         // 让两次滑动的距离不超过设置的边界值
-        if (this.allMove >= this.maxUpBounce) {
-
-          this.allMove = this.maxUpBounce;
-
-        } else if (this.allMove < this.maxDownBounce) {
-
-          this.allMove = this.maxDownBounce;
-
-        }
+        this.allMove = this.allMove >= this.maxUpBounce ? this.maxUpBounce : this.maxDownBounce;
 
         //利用动画实现滑动效果
         this.$refs['VMRoll'].style.transition = "transform 800ms cubic-bezier(.165, .84, .44, 1) 0s";

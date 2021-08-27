@@ -83,8 +83,6 @@ export default {
       ],
       tableList:[],
       list: [
-        {name: ''},
-        {name: ''},
         {name: '测试1'},
         {name: '测试2'},
         {name: '测试3'},
@@ -104,8 +102,6 @@ export default {
         {name: '测试17'},
         {name: '测试18'},
         {name: '测试19'},
-        {name: ''},
-        {name: ''},
       ],
     }
   },
