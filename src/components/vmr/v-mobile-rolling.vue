@@ -25,7 +25,7 @@
         type: Boolean,
         default: true
       },
-      //横向滚动时高度，因为是横向滚动，故需要设置定高
+      //纵向滚动，故需要设置定高
       heightHorizontal:{
         type:Number,
         default:200
@@ -45,6 +45,7 @@
         type:Number,
         default:50
       },
+      //初始滑动到某个位置
       initPosition:{
         type:Number,
         default:0
@@ -53,7 +54,7 @@
     data() {
       return {
 
-        isRolling: false,//是否滚动
+        isRolling: false,//是否滚动，当内容填充不满时，不滚动
 
         startX: 0,//鼠标开始滑动的距离
         moveX: 0,//鼠标移动的距离
@@ -63,9 +64,10 @@
         maxDownBounce: 0,//最大向下反弹的距离
 
         maxUp: 0,//最大向右滑动的距离
+        maxDown: 0,//最大向左滑动的距离
 
         moveTime: 0,//滑动时间
-        moveDistance: 0,//滑动距离
+        moveDistance: 0,//记录移动距离用于计算滑动结束时的速度
 
         offsetDir: 'offsetWidth',//offset方向
         clientDir: 'clientX',//滑动方向距离
@@ -167,7 +169,7 @@
         //记录开始的时间
         this.moveTime = new Date().getTime();
 
-        //记录移动距离
+        //记录移动距离用于计算滑动结束时的速度
         this.moveDistance = this.startX;
 
         //开始滑动时触发回调
@@ -282,10 +284,6 @@
       position: absolute;
       left: 0;
       top: 0;
-    }
-
-    .hei100 {
-      height: 100%;
     }
 
     .width100{
