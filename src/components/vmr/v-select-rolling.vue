@@ -64,7 +64,7 @@
 
       //初始化返回选中值
       this.position = - Number(this.rollUnit) * (this.selectIndex);
-      this.$emit('selectItem', this.dateList[this.selectIndex+2])
+      this.$emit('selectItem', this.dateList[this.selectIndex])
 
     }
   }

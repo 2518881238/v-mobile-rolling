@@ -2,7 +2,6 @@
   <div id="app">
     <div class="content" style="background: #d3d3d3;border: 1px solid #ffffff">
 
-
       <!--横向滚动demo-->
       <v-mobile-rolling :distance-more="700">
 
@@ -34,7 +33,6 @@
 
 
     <div class="content">
-      <div class="table1">
 
         <v-mobile-rolling :distance-more="700">
 
@@ -49,7 +47,6 @@
           </div>
         </v-mobile-rolling>
 
-      </div>
     </div>
 
     <!--显示select项-->
